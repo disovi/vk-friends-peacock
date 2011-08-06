@@ -17,6 +17,7 @@ setTimeout( function() {
 
 function peacock(root_uid) {
     console.log('peacock: ', root_uid);
+    gl_root_uid = root_uid;
     setTimeout(function() {
                 VK.Api.call('friends.get', {
                     uid: root_uid,
@@ -43,20 +44,16 @@ function peacock(root_uid) {
 function getMutualFriends(friend_nr, root_uid) {
     console.log('Mutual for ' + root_uid + ' and ' + gl_root.friends[friend_nr].uid + ' ' + gl_root.friends[friend_nr].first_name + ' ' + gl_root.friends[friend_nr].last_name);
     var new_mutual_friend = {};
-    new_mutual_friend.uid = gl_root.friends[friend_nr].uid;
-    new_mutual_friend.first_name = gl_root.friends[friend_nr].first_name;
-    new_mutual_friend.last_name = gl_root.friends[friend_nr].last_name;
-    new_mutual_friend.photo = gl_root.friends[friend_nr].photo;
+    new_mutual_friend = gl_root.friends[friend_nr];
     new_mutual_friend.friends = [];
     gl_mutual_friends.push(new_mutual_friend);
     setTimeout(function() {
-                VK.Api.call('friends.getMutual', {
-                    target_uid: gl_root.friends[friend_nr].uid,
-                    source_uid: root_uid,
-                    test_mode: 1
-                }, getMutualFriendsCallback);
-            }, gl_timeout);
-            
+        VK.Api.call('friends.getMutual', {
+            target_uid: gl_root.friends[friend_nr].uid,
+            source_uid: root_uid,
+            test_mode: 1
+        }, getMutualFriendsCallback);},
+        gl_timeout);
 }
 
 function getMutualFriendsCallback(fr) {
@@ -64,19 +61,46 @@ function getMutualFriendsCallback(fr) {
         console.log("friends.getMutual error: " + fr.error.error_msg);
         return;
     }
+    // ждем таймаут перед обращением
+    setTimeout(function() {
+        VK.Api.call('wall.get', {
+                owner_id: gl_mutual_friends[gl_friend_nr].uid,
+                test_mode: 1
+            }, function(wall) {
+                if (wall.error) {
+                    console.log("wall.get error: " + wall.error.error_msg);
+                    return;
+                }
+                if (!wall.response[0]) {
+                    console.log("0 messages returned");
+                    return;
+                }
+                fr.response.forEach(function(uid) {
+                    var new_connection = {};
+                    new_connection.uid = uid;
+                    new_connection.weight = getWeight(uid, wall.response);
+                    gl_mutual_friends[gl_friend_nr].friends.push(new_connection);
+                    console.log("uid: " + new_connection.uid + " weight: " + new_connection.weight);
+                });
+                if (++gl_friend_nr < gl_root.friends.length - 1) {
+                    getMutualFriends(gl_friend_nr, gl_root_uid);
+                    return;
+                }
+                else {
+                    // TODO: graph builder should be called here
+                    console.log('finished');
+                }
+            });},
+            gl_timeout);
+}
 
-    fr.response.forEach(function(uid) {
-                            gl_mutual_friends[gl_friend_nr].friends.push(uid);
-                            console.log(uid);
-                        });
-    if (++gl_friend_nr < gl_root.friends.length - 1) {
-        getMutualFriends(gl_friend_nr, gl_root_uid);
-        return;
-    }
-    else {
-        // TODO: graph builder is called here
-        console.log('finished');
-    }
+function getWeight(sender_uid, wall) {
+    var weight = 0;
+    wall.forEach(function (msg) {
+            if (msg.from_id == sender_uid)
+                weight++;
+        });
+    return weight;
 }
     
     
