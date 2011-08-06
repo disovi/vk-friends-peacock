@@ -112,7 +112,6 @@ var test_data = JSON.parse(localStorage.getItem("vlad"));
         
         node.append("svg:a")
             .attr("xlink:href", function(d) { return "http://vkontakte.ru/id" + d.uid; })
-            .attr("xlink:show ", "new")
             .append("svg:text")
             .attr("dx", function(d) { return d.x < 180 ? 8 : -8; })
             .attr("dy", ".31em")
@@ -122,7 +121,7 @@ var test_data = JSON.parse(localStorage.getItem("vlad"));
         
         node.append("svg:image")
             .attr("class", "node")
-            .attr("onClick", "alert('hello');")
+            .attr("onclick", "alert('hello');")
             .attr("xlink:href", function(d) { return d.photo; })
             .attr("x", "-20px")
             .attr("y", "-20px")
