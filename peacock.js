@@ -5,19 +5,21 @@ VK.Widgets.Auth("vk_auth", {
 });
 
 var gl_root = {};
-var gl_root_uid = 2183;
 var gl_friend_nr = 0;
 var gl_timeout = 300;
+var gl_depth = 1;
 var gl_mutual_friends = [];
+var gl_curr_friends = [];
+var gl_deep_wall = [];
 
 setTimeout( function() {
-                peacock(gl_root_uid);
+                peacock(2183,1);
             },
             gl_timeout);
 
-function peacock(root_uid) {
-    console.log('peacock: ', root_uid);
-    gl_root_uid = root_uid;
+function peacock(root_uid, depth) {
+    gl_depth = depth;
+    console.log('peacock:', root_uid, 'depth:', depth);
     setTimeout(function() {
                 VK.Api.call('friends.get', {
                     uid: root_uid,
@@ -35,7 +37,6 @@ function peacock(root_uid) {
                     console.log("Friends collected " + r.response.length);
                     gl_root.uid = root_uid;
                     gl_root.friends = r.response;
-                    gl_root.links = [];
                     getMutualFriends(0, root_uid);
                 });
             }, gl_timeout);
@@ -61,37 +62,54 @@ function getMutualFriendsCallback(fr) {
         console.log("friends.getMutual error: " + fr.error.error_msg);
         return;
     }
-    // ждем таймаут перед обращением
+    gl_curr_friends = fr.response;
     setTimeout(function() {
         VK.Api.call('wall.get', {
-                owner_id: gl_mutual_friends[gl_friend_nr].uid,
+            owner_id: gl_mutual_friends[gl_friend_nr].uid,
+            count: 100,
+            test_mode: 1
+        }, getWallCallback);
+    }, gl_timeout);
+}
+
+function getWallCallback(wall) {
+    if (wall.error) {
+        console.log("wall.get error: " + wall.error.error_msg);
+        return;
+    }
+    gl_deep_wall.push(wall.response);
+    if (wall.response[0] && gl_deep_wall.length < gl_depth) {
+        setTimeout(function() {
+            VK.Api.call('wall.get', {
+                offset: gl_deep_wall.length * 100,
+                count: 100,
                 test_mode: 1
-            }, function(wall) {
-                if (wall.error) {
-                    console.log("wall.get error: " + wall.error.error_msg);
-                    return;
-                }
-                if (!wall.response[0]) {
-                    console.log("0 messages returned");
-                    return;
-                }
-                fr.response.forEach(function(uid) {
-                    var new_connection = {};
-                    new_connection.uid = uid;
-                    new_connection.weight = getWeight(uid, wall.response);
-                    gl_mutual_friends[gl_friend_nr].friends.push(new_connection);
-                    console.log("uid: " + new_connection.uid + " weight: " + new_connection.weight);
-                });
-                if (++gl_friend_nr < gl_root.friends.length - 1) {
-                    getMutualFriends(gl_friend_nr, gl_root_uid);
-                    return;
-                }
-                else {
-                    // TODO: graph builder should be called here
-                    console.log('finished');
-                }
-            });},
-            gl_timeout);
+            }, getWallCallback);
+        }, gl_timeout);
+    }
+    else
+        getWeights(gl_curr_friends, gl_deep_wall);
+}
+
+function getWeights(mutual_friends, deep_wall) {
+    mutual_friends.forEach(function(uid) {
+        var new_connection = {};
+        new_connection.uid = uid;
+        new_connection.weight = 0;
+        for (i = 0; i < deep_wall.length; i++)
+            new_connection.weight += getWeight(uid, deep_wall[i]);
+        gl_mutual_friends[gl_friend_nr].friends.push(new_connection);
+        console.log("uid: " + new_connection.uid + " weight: " + new_connection.weight);
+    });
+    if (++gl_friend_nr < gl_root.friends.length - 1) {
+        gl_deep_wall = [];
+        getMutualFriends(gl_friend_nr, gl_root.uid);
+        return;
+    }
+    else {
+        // TODO: graph builder should be called here
+        console.log('finished');
+    }
 }
 
 function getWeight(sender_uid, wall) {
