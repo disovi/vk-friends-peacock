@@ -1,6 +1,10 @@
 VK.Widgets.Auth("vk_auth", {
     width: "200px",
     onAuth: function(data) {
+        setTimeout( function() {
+                peacock(2183,1);
+            },
+            gl_timeout);
     }
 });
 
@@ -13,12 +17,9 @@ var gl_curr_friends = [];
 var gl_deep_wall = [];
 var gl_groups = 0;
 
-setTimeout( function() {
-                peacock(16051904,1);
-            },
-            gl_timeout);
 
 function peacock(root_uid, depth) {
+    gl_root = {};
     console.log('peacock:', root_uid, 'depth:', depth);
     gl_depth = depth;
     var data = getCashedData(root_uid);
@@ -152,6 +153,7 @@ function getWeights(mutual_friends, deep_wall) {
         cashData(gl_root,gl_groups);
         console.log('finished');
         // TODO: graph builder should be called here
+        peacock_view.plot(gl_root);
     }
 }
 
