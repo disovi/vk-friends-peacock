@@ -14,12 +14,13 @@ var gl_deep_wall = [];
 var gl_groups = 0;
 
 setTimeout( function() {
-                peacock(2183,1);
+                peacock(16051904,1);
             },
             gl_timeout);
 
 function peacock(root_uid, depth) {
     gl_depth = depth;
+    var data = getCashedData(root_uid);
     console.log('peacock:', root_uid, 'depth:', depth);
     setTimeout(function() {
                 VK.Api.call('friends.get', {
@@ -107,15 +108,17 @@ function getWallCallback(wall) {
 }
 
 function getWeights(mutual_friends, deep_wall) {
-    mutual_friends.forEach(function(uid) {
-        var new_connection = {};
-        new_connection.uid = uid;
-        new_connection.weight = 0;
-        for (i = 0; i < deep_wall.length; i++)
-            new_connection.weight += getWeight(uid, deep_wall[i]);
-        gl_mutual_friends[gl_friend_nr].friends.push(new_connection);
-        console.log("uid: " + new_connection.uid + " weight: " + new_connection.weight);
-    });
+    if (gl_curr_friends.length) {
+        mutual_friends.forEach(function(uid) {
+            var new_connection = {};
+            new_connection.uid = uid;
+            new_connection.weight = 0;
+            for (i = 0; i < deep_wall.length; i++)
+                new_connection.weight += getWeight(uid, deep_wall[i]);
+            gl_mutual_friends[gl_friend_nr].friends.push(new_connection);
+            console.log("uid: " + new_connection.uid + " weight: " + new_connection.weight);
+        });
+    }
     if (++gl_friend_nr < gl_root.friends.length) {
         gl_deep_wall = [];
         gl_curr_friends = [];
@@ -131,6 +134,7 @@ function getWeights(mutual_friends, deep_wall) {
                     console.log(friend.uid);
             });
         }
+        cashData(gl_root,gl_mutual_friends);
         console.log('finished');
         // TODO: graph builder should be called here
     }
@@ -188,6 +192,18 @@ function getFriendById(uid) {
             return gl_mutual_friends[friend_id];
         }
     }
+}
+
+function cashData(root, mutual_friends) {
+    console.log('cashing');
+    localStorage.setItem(root.uid, JSON.stringify({ main: root, mutual: mutual_friends}));
+}
+
+function getCashedData(uid) {
+    node = JSON.parse(localStorage.getItem(root.uid));
+    if (!node)
+        console.log('no cashed data found');
+    return node;
 }
     
     
