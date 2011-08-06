@@ -2,7 +2,7 @@ VK.Widgets.Auth("vk_auth", {
     width: "200px",
     onAuth: function(data) {
         setTimeout( function() {
-                peacock(2183,1);
+                peacock(109168,1);
             },
             gl_timeout);
     }
