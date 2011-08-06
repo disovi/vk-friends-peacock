@@ -21,10 +21,11 @@ setTimeout( function() {
 function peacock(root_uid, depth) {
     console.log('peacock:', root_uid, 'depth:', depth);
     gl_depth = depth;
-    var root = getCashedData(root_uid);
-    if (root) {
-        gl_root = root;
-        gl_mutual_friends = root.friends;
+    var data = getCashedData(root_uid);
+    if (data) {
+        gl_root = data.root;
+        gl_mutual_friends = data.root.friends;
+        gl_groups = data.groups;
         return;
     }
     setTimeout(function() {
@@ -148,7 +149,7 @@ function getWeights(mutual_friends, deep_wall) {
                     console.log(friend.uid);
             });
         }
-        cashData(gl_root,gl_mutual_friends);
+        cashData(gl_root,gl_groups);
         console.log('finished');
         // TODO: graph builder should be called here
     }
@@ -208,9 +209,9 @@ function getFriendById(uid) {
     }
 }
 
-function cashData(root, mutual_friends) {
+function cashData(root, groups) {
     console.log('cashing');
-    localStorage.setItem(root.uid, JSON.stringify(root));
+    localStorage.setItem(root.uid, JSON.stringify({root: root, groups: groups}));
 }
 
 function getCashedData(uid) {
