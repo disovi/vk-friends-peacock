@@ -11,6 +11,7 @@ var gl_depth = 1;
 var gl_mutual_friends = [];
 var gl_curr_friends = [];
 var gl_deep_wall = [];
+gl_groups = 0;
 
 setTimeout( function() {
                 peacock(2183,1);
@@ -95,6 +96,7 @@ function getWeights(mutual_friends, deep_wall) {
     mutual_friends.forEach(function(uid) {
         var new_connection = {};
         new_connection.uid = uid;
+        new_connection.gr_id = 0;
         new_connection.weight = 0;
         for (i = 0; i < deep_wall.length; i++)
             new_connection.weight += getWeight(uid, deep_wall[i]);
@@ -103,11 +105,13 @@ function getWeights(mutual_friends, deep_wall) {
     });
     if (++gl_friend_nr < gl_root.friends.length - 1) {
         gl_deep_wall = [];
+        gl_curr_friends = [];
         getMutualFriends(gl_friend_nr, gl_root.uid);
         return;
     }
     else {
         // TODO: graph builder should be called here
+        setGroups(gl_mutual_friends);
         console.log('finished');
     }
 }
@@ -119,6 +123,49 @@ function getWeight(sender_uid, wall) {
                 weight++;
         });
     return weight;
+}
+
+function setGroups(mutual_friends) {
+    for (var friend_id = 0; friend_id < mutual_friends.length - 1; friend_id++) {
+        group = false;
+        for (var i = 0; i < mutual_friends[friend_id].friends.length - 2; i++) {
+            if (mutual_friends[friend_id].friends[i].uid <= mutual_friends[friend_id].uid)
+                continue;
+            curr_friend = getFriendById(mutual_friends[friend_id].friends[i].uid);
+            for (var j = i + 1; j < mutual_friends[friend_id].friends.length - 1; j++) {
+                for (var k = 0; k < curr_friend.friends.length - 1; k++) {
+                    if (curr_friend.friends[k].uid == mutual_friends[friend_id].friends[j].uid) {
+                        group = true;
+                        break;
+                    }
+                }
+                if (group) {
+                    if (!mutual_friends[friend_id].gr_id) {
+                        mutual_friends[friend_id].gr_id = ++gl_groups;
+                    }
+                    setUserGroup(mutual_friends[friend_id].gr_id, mutual_friends[friend_id].friends[i].uid);
+                    setUserGroup(mutual_friends[friend_id].gr_id, mutual_friends[friend_id].friends[j].uid);
+                }
+            }
+        }
+    }
+}
+
+function setUserGroup(gr_id, uid) {
+    for (var friend_id = 0; friend_id < gl_mutual_friends.length - 1; friend_id++) {
+        if (gl_mutual_friends[friend_id].uid == uid) {
+            gl_mutual_friends[friend_id].gr_id = gr_id;
+            return;
+        }
+    }
+}
+
+function getFriendById(uid) {
+    for (friend_id = 0; friend_id < gl_mutual_friends.length - 1; friend_id++) {
+        if (gl_mutual_friends[friend_id].uid == uid) {
+            return gl_mutual_friends[friend_id];
+        }
+    }
 }
     
     
