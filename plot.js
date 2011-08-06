@@ -89,7 +89,9 @@ var test_data = JSON.parse(localStorage.getItem("vlad"));
                     .attr("x2", function(d) { return d.target.x; })
                     .attr("y2", function(d) { return d.target.y; })
                     .style("stroke", function(d, i) {
-                        if (d.weight > 5 && d.weight < 10)
+                        if (d.weight > 0 && d.weight < 5)
+                            return d3.rgb("#ccc");
+                        else if (d.weight > 5 && d.weight < 10)
                             return d3.rgb("green");
                         else if (d.weight > 10 && d.weight < 20)
                             return d3.rgb("green").darker(2);
@@ -121,9 +123,10 @@ var test_data = JSON.parse(localStorage.getItem("vlad"));
             .text(function(d) { return d.first_name + " " + d.last_name; } );
         
         // function(d) { return "alert(peacock(" + d.uid + "));"; }
+        
         node.append("svg:image")
             .attr("class", "node")
-            .attr("onclick", function(d) { return "peacock(" + d.uid + ");"; } )
+            .attr("onclick", function(d) { return "peacock(" + d.uid + ", 1);"; } )
             .attr("xlink:href", function(d) { return d.photo; })
             .attr("x", "-20px")
             .attr("y", "-20px")
