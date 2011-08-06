@@ -4,30 +4,31 @@ var test_data = JSON.parse(localStorage.getItem("vlad"));
 (function() {
     peacock_view = {};
     
-    var canvas_init = false;
-    
     var w = 3000,
         h = 2000,
         fill = d3.scale.category10();
     
-    var force = d3.layout.force()
-                  .distance(700)
-                  .linkDistance(700)
-                  .charge(-300)
-                  .theta(.1)
-                  .size([w, h]);
-    
-    var vis = d3.select("body").append("svg:svg")
-                .attr("width", w)
-                .attr("height", h)
-                .append("svg:g");
-    
-    var nodes = [],
-        links = [];
-        
-    peacock_view.plot = function(data) {
 
         
+    peacock_view.plot = function(ex_data) {
+        
+        var nodes = [],
+            links = [];
+        
+        data = clone(ex_data);
+        
+        var vis = d3.select("body").append("svg:svg")
+            .attr("width", w)
+            .attr("height", h)
+            .append("svg:g");
+                
+        var force = d3.layout.force()
+              .distance(700)
+              .linkDistance(700)
+              .charge(-300)
+              .theta(.1)
+              .size([w, h]);
+                  
         var sorted_data = [];
         
         // Prepare data
@@ -119,9 +120,10 @@ var test_data = JSON.parse(localStorage.getItem("vlad"));
             .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
             .text(function(d) { return d.first_name + " " + d.last_name; } );
         
+        // function(d) { return "alert(peacock(" + d.uid + "));"; }
         node.append("svg:image")
             .attr("class", "node")
-            .attr("onclick", "alert('hello');")
+            .attr("onclick", function(d) { return "peacock(" + d.uid + ");"; } )
             .attr("xlink:href", function(d) { return d.photo; })
             .attr("x", "-20px")
             .attr("y", "-20px")
@@ -160,20 +162,22 @@ var test_data = JSON.parse(localStorage.getItem("vlad"));
           }); 
 
     };
-    
-    d3.select("body").on("click", function() {
-        force.stop();
-        
-        force
-            .nodes(nodes)
-            .links([])
-            .start();
-            
-        force.resume();
-    });
 
     peacock_view.stop = function() { force.stop(); };
     peacock_view.get_nodes = function() { return nodes; };
     peacock_view.get_links = function() { return links; };
     
 })();
+
+
+function clone(obj) {
+    // A clone of an object is an empty object 
+            // with a prototype reference to the original.
+
+    // a private constructor, used only by this one clone.
+            function Clone() { } 
+    Clone.prototype = obj;
+    var c = new Clone();
+            c.constructor = Clone;
+            return c;
+}
