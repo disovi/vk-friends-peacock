@@ -27,6 +27,7 @@ function peacock(root_uid, depth) {
         gl_root = data.root;
         gl_mutual_friends = data.root.friends;
         gl_groups = data.groups;
+        peacock_view.plot(gl_root);
         return;
     }
     setTimeout(function() {
