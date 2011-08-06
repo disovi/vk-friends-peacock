@@ -11,7 +11,7 @@ var gl_depth = 1;
 var gl_mutual_friends = [];
 var gl_curr_friends = [];
 var gl_deep_wall = [];
-gl_groups = 0;
+var gl_groups = 0;
 
 setTimeout( function() {
                 peacock(2183,1);
@@ -38,6 +38,13 @@ function peacock(root_uid, depth) {
                     console.log("Friends collected " + r.response.length);
                     gl_root.uid = root_uid;
                     gl_root.friends = r.response;
+                    // removing ourself from friends
+                    for (var i = 0; i < gl_root.friends.length; i++) {
+                        if (gl_root.friends[i].uid == gl_root.uid) {
+                            gl_root.friends.splice(i, 1);
+                            break;
+                        }
+                    }
                     getMutualFriends(0, root_uid);
                 });
             }, gl_timeout);
@@ -48,6 +55,7 @@ function getMutualFriends(friend_nr, root_uid) {
     var new_mutual_friend = {};
     new_mutual_friend = gl_root.friends[friend_nr];
     new_mutual_friend.friends = [];
+    new_mutual_friend.gr_id = 0;
     gl_mutual_friends.push(new_mutual_friend);
     setTimeout(function() {
         VK.Api.call('friends.getMutual', {
@@ -64,6 +72,12 @@ function getMutualFriendsCallback(fr) {
         return;
     }
     gl_curr_friends = fr.response;
+    // removing ourself and himself from friends
+    for (var i = 0; i < gl_curr_friends.length; i++) {
+        if (gl_curr_friends[i] == gl_root.uid || gl_curr_friends[i] == gl_mutual_friends[gl_friend_nr].uid) {
+            gl_curr_friends.splice(i, 1);
+        } 
+    }
     setTimeout(function() {
         VK.Api.call('wall.get', {
             owner_id: gl_mutual_friends[gl_friend_nr].uid,
@@ -96,23 +110,29 @@ function getWeights(mutual_friends, deep_wall) {
     mutual_friends.forEach(function(uid) {
         var new_connection = {};
         new_connection.uid = uid;
-        new_connection.gr_id = 0;
         new_connection.weight = 0;
         for (i = 0; i < deep_wall.length; i++)
             new_connection.weight += getWeight(uid, deep_wall[i]);
         gl_mutual_friends[gl_friend_nr].friends.push(new_connection);
         console.log("uid: " + new_connection.uid + " weight: " + new_connection.weight);
     });
-    if (++gl_friend_nr < gl_root.friends.length - 1) {
+    if (++gl_friend_nr < gl_root.friends.length) {
         gl_deep_wall = [];
         gl_curr_friends = [];
         getMutualFriends(gl_friend_nr, gl_root.uid);
         return;
     }
     else {
-        // TODO: graph builder should be called here
         setGroups(gl_mutual_friends);
+        for (var i = 0; i <= gl_groups; i++) {
+            console.log('group id:', i);
+            gl_mutual_friends.forEach(function(friend) {
+                if(friend.gr_id == i)
+                    console.log(friend.uid);
+            });
+        }
         console.log('finished');
+        // TODO: graph builder should be called here
     }
 }
 
@@ -126,14 +146,15 @@ function getWeight(sender_uid, wall) {
 }
 
 function setGroups(mutual_friends) {
-    for (var friend_id = 0; friend_id < mutual_friends.length - 1; friend_id++) {
-        group = false;
-        for (var i = 0; i < mutual_friends[friend_id].friends.length - 2; i++) {
+    console.log('Setting user groups:');
+    for (var friend_id = 0; friend_id < mutual_friends.length; friend_id++) {
+        var group = false;
+        for (var i = 0; i < mutual_friends[friend_id].friends.length - 1; i++) {
             if (mutual_friends[friend_id].friends[i].uid <= mutual_friends[friend_id].uid)
                 continue;
             curr_friend = getFriendById(mutual_friends[friend_id].friends[i].uid);
-            for (var j = i + 1; j < mutual_friends[friend_id].friends.length - 1; j++) {
-                for (var k = 0; k < curr_friend.friends.length - 1; k++) {
+            for (var j = i + 1; j < mutual_friends[friend_id].friends.length; j++) {
+                for (var k = 0; k < curr_friend.friends.length; k++) {
                     if (curr_friend.friends[k].uid == mutual_friends[friend_id].friends[j].uid) {
                         group = true;
                         break;
@@ -145,6 +166,7 @@ function setGroups(mutual_friends) {
                     }
                     setUserGroup(mutual_friends[friend_id].gr_id, mutual_friends[friend_id].friends[i].uid);
                     setUserGroup(mutual_friends[friend_id].gr_id, mutual_friends[friend_id].friends[j].uid);
+                    group = false;
                 }
             }
         }
@@ -152,7 +174,7 @@ function setGroups(mutual_friends) {
 }
 
 function setUserGroup(gr_id, uid) {
-    for (var friend_id = 0; friend_id < gl_mutual_friends.length - 1; friend_id++) {
+    for (var friend_id = 0; friend_id < gl_mutual_friends.length; friend_id++) {
         if (gl_mutual_friends[friend_id].uid == uid) {
             gl_mutual_friends[friend_id].gr_id = gr_id;
             return;
@@ -161,7 +183,7 @@ function setUserGroup(gr_id, uid) {
 }
 
 function getFriendById(uid) {
-    for (friend_id = 0; friend_id < gl_mutual_friends.length - 1; friend_id++) {
+    for (friend_id = 0; friend_id < gl_mutual_friends.length; friend_id++) {
         if (gl_mutual_friends[friend_id].uid == uid) {
             return gl_mutual_friends[friend_id];
         }
