@@ -19,9 +19,14 @@ setTimeout( function() {
             gl_timeout);
 
 function peacock(root_uid, depth) {
-    gl_depth = depth;
-    var data = getCashedData(root_uid);
     console.log('peacock:', root_uid, 'depth:', depth);
+    gl_depth = depth;
+    var root = getCashedData(root_uid);
+    if (root) {
+        gl_root = root;
+        gl_mutual_friends = root.friends;
+        return;
+    }
     setTimeout(function() {
                 VK.Api.call('friends.get', {
                     uid: root_uid,
@@ -196,13 +201,15 @@ function getFriendById(uid) {
 
 function cashData(root, mutual_friends) {
     console.log('cashing');
-    localStorage.setItem(root.uid, JSON.stringify({ main: root, mutual: mutual_friends}));
+    localStorage.setItem(root.uid, JSON.stringify(root));
 }
 
 function getCashedData(uid) {
-    node = JSON.parse(localStorage.getItem(root.uid));
+    node = JSON.parse(localStorage.getItem(uid));
     if (!node)
         console.log('no cashed data found');
+    else 
+        console.log('cashed data loaded succesfully');
     return node;
 }
     
