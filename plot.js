@@ -64,7 +64,12 @@ var test_data = JSON.parse(localStorage.getItem("vlad"));
                         if (e.uid === friend.uid)
                             from = i;
                     });
-
+                    
+                    if (nodes[from] === undefined || nodes[to] === undefined) {
+                        console.log('Page is supposed to be deleted:', mutual_friend.uid);
+                        return;
+                    }
+                    
                     // skip main
                     if (nodes[from].uid == data.uid || nodes[to].uid == data.uid)
                         return;

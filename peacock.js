@@ -1,8 +1,12 @@
 VK.Widgets.Auth("vk_auth", {
     width: "200px",
     onAuth: function(data) {
+        if (data.error) {
+            console.log("vk_auth error:", data.error.error_msg);
+            return;
+        }
         setTimeout( function() {
-                peacock(109168,1);
+                peacock(data.uid,1);
             },
             gl_timeout);
     }
