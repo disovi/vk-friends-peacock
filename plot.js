@@ -64,12 +64,7 @@ var test_data = JSON.parse(localStorage.getItem("vlad"));
                         if (e.uid === friend.uid)
                             from = i;
                     });
-                    
-                    if (nodes[from] === undefined || nodes[to] === undefined) {
-                        console.log('Page is supposed to be deleted:', mutual_friend.uid);
-                        return;
-                    }
-                    
+
                     // skip main
                     if (nodes[from].uid == data.uid || nodes[to].uid == data.uid)
                         return;
@@ -94,13 +89,13 @@ var test_data = JSON.parse(localStorage.getItem("vlad"));
                     .attr("x2", function(d) { return d.target.x; })
                     .attr("y2", function(d) { return d.target.y; })
                     .style("stroke", function(d, i) {
-                        if (d.weight > 0 && d.weight < 5)
+                        if (d.weight > 0 && d.weight <= 5)
                             return d3.rgb("#ccc");
-                        else if (d.weight > 5 && d.weight < 10)
+                        else if (d.weight > 5 && d.weight <= 10)
                             return d3.rgb("green");
-                        else if (d.weight > 10 && d.weight < 20)
+                        else if (d.weight > 10 && d.weight <= 20)
                             return d3.rgb("green").darker(2);
-                        else if (d.weight > 20 && d.weight < 30)
+                        else if (d.weight > 20 && d.weight <= 30)
                             return d3.rgb("red").darker(2);
                         else if (d.weight > 30)
                             return d3.rgb("red").darker(3);
