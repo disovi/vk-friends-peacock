@@ -7,15 +7,15 @@ var test_data = JSON.parse(localStorage.getItem("vlad"));
     var w = 3000,
         h = 2000,
         fill = d3.scale.category10();
-    
 
-        
     peacock_view.plot = function(ex_data) {
         
         var nodes = [],
             links = [];
         
         data = clone(ex_data);
+        
+        d3.selectAll("svg").remove();
         
         var vis = d3.select("body").append("svg:svg")
             .attr("width", w)
@@ -100,7 +100,7 @@ var test_data = JSON.parse(localStorage.getItem("vlad"));
                         else if (d.weight > 30)
                             return d3.rgb("red").darker(3);
                     })
-                    .style("stroke-width", function(d) { return d.weight + 1; });
+                    .style("stroke-width", function(d) { return d.weight; });
         
         var node = vis.selectAll("g.node")
                     .data(nodes)
