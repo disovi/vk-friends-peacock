@@ -37,7 +37,7 @@ function peacock(root_uid, depth) {
             test_mode: 1
         }, function(profile_list) {
             if (profile_list.error) {
-                console.log("getProfiles error:", r.error.error_msg);
+                console.log("getProfiles error:", profile_list.error.error_msg);
                 return;
             }
             gl_root = profile_list.response[0];
