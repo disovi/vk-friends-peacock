@@ -1,0 +1,95 @@
+body {
+    direction: ltr;
+    font-family: tahoma, arial, verdana, sans-serif, Lucida Sans;
+    font-size: 11px;
+}
+
+.sc_menu_wrapper {
+  position: relative;
+  height: 500px;
+  width: 200px;
+
+  margin-top: 30px;
+  overflow: auto;
+}
+
+.sc_menu {
+  padding: 15px 0;
+}
+
+.sc_menu a {
+  display: block;
+  margin-bottom: 5px;
+  width: 160px;
+
+  text-decoration: none;
+  
+  border: 2px rgb(79, 79, 79) solid;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+
+  color: #fff;
+  background: rgb(79, 79, 79);
+}
+
+.sc_menu a:hover {
+  border-color: rgb(130, 130, 130);
+  border-style: dotted;
+}
+
+.sc_menu img {
+  display: block;
+  border: none;
+}
+
+.sc_menu_wrapper .loading {
+  position: absolute;
+  top: 50px;
+  left: 10px;
+
+  margin: 0 auto;
+  padding: 10px;
+
+  width: 100px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+
+  text-align: center;
+  color: #fff;
+  border: 1px solid rgb(79, 79, 79);
+  background: #1F1D1D;
+}
+
+.contact {
+    display: block;
+    height: 30px;
+    padding: 4px 8px;
+    line-height: 0;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.contact_photo {
+    width: 30px;
+    height: 30px;
+    background: 0 0 no-repeat;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.contact_name {
+    line-height: 30px;
+    padding: 0 0 0 8px;
+    white-space: nowrap;
+    display: block;
+    width: 120px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.fl_l {
+    float: left;
+}
+
+
