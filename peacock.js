@@ -6,19 +6,27 @@ var gl_depth = 1;
 var gl_curr_friends = [];
 var gl_deep_wall = [];
 var gl_groups = 0;
+var gl_loop_object = {start:0, end:10, current:0, interval:null};
 
 
-VK.Widgets.Auth("vk_auth", {
-    width: "200px",
-    onAuth: function(data) {
-        if (data.error) {
-            console.log("vk_auth error:", data.error.error_msg);
-            return;
-        }
-        gl_root = data;
-        peacock(data.uid,1);
+function authInfo(response) {
+    if (response.session) {
+        console.log('user has logged in:', response.session.mid);
+        //removeElement('login_button');
+        removeElement('login_button');
+        show('search_by_id');
+        peacock(response.session.mid, 1);
     }
-});
+    else {
+        console.log('auth failed');
+        alert('sorry, authentification failed');
+    }
+}
+
+function removeElement(id) {
+    var element = document.getElementById(id);
+    element.parentNode.removeChild(element);
+}
 
 function peacock(root_uid, depth) {
     console.log('peacock:', root_uid, 'depth:', depth);
@@ -32,6 +40,7 @@ function peacock(root_uid, depth) {
         return;
     }
     if (root_uid != gl_root.uid) {
+        showProgressBar();
         setTimeout(function() {
             VK.Api.call('getProfiles', {
                 uids: root_uid,
@@ -72,7 +81,8 @@ function getFriends(root_uid) {
         }
         console.log("Friends collected " + r.response.length);
         gl_root.friends = r.response;
-        // removing ourself from friends
+        gl_loop_object.end = gl_root.friends.length; 
+         // removing ourself from friends
         for (var i = 0; i < gl_root.friends.length; i++) {
             if (gl_root.friends[i].uid == gl_root.uid) {
                 gl_root.friends.splice(i, 1);
@@ -84,6 +94,8 @@ function getFriends(root_uid) {
 }
 
 function getMutualFriends(friend_nr, root_uid) {
+    gl_loop_object.current = friend_nr;
+    calcProgress(gl_loop_object.current, gl_loop_object.end);
     console.log('Mutual for ' + root_uid + ' and ' + gl_root.friends[friend_nr].uid + ' ' + gl_root.friends[friend_nr].first_name + ' ' + gl_root.friends[friend_nr].last_name);
     //var new_mutual_friend = {};
     //new_mutual_friend = gl_root.friends[friend_nr];
@@ -137,8 +149,9 @@ function getWallCallback(wall) {
             }, getWallCallback);
         }, gl_timeout);
     }
-    else
+    else {
         getWeights(gl_curr_friends, gl_deep_wall);
+    }
 }
 
 function getWeights(mutual_friends, deep_wall) {
@@ -171,6 +184,7 @@ function getWeights(mutual_friends, deep_wall) {
         cashData(gl_root,gl_groups);
         console.log('finished');
         // TODO: graph builder should be called here
+        setTimeout(hideProgressBar(), 500);
         peacock_view.plot(gl_root);
     }
 }

@@ -5,8 +5,10 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         
         <title>Friends Peacock</title>
-        <script type="text/javascript" src="http://userapi.com/js/api/openapi.js?33"></script>
-    
+        
+        <script type="text/javascript" src="http://userapi.com/js/api/openapi.js?34"></script>
+       
+        
         <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script>
         <script type="text/javascript" src="http://mbostock.github.com/d3/d3.layout.js"></script>
         <script type="text/javascript" src="http://mbostock.github.com/d3/d3.geom.js"></script>
@@ -15,7 +17,12 @@
     
         <script type="text/javascript" src="ui.js"></script>
         <link rel="stylesheet" href="ui.css" type="text/css"/>
-    
+        
+        <script src="toggle.js" type="text/javascript"></script>
+        <script src="progressbar.js" type="text/javascript"></script>
+        <script src="peacock.js" type="text/javascript"></script>
+        <script type="text/javascript" src="plot.js"></script>
+        
         <style type="text/css">
           path.link {
           fill: none;
@@ -23,28 +30,75 @@
           stroke-width: 1.5px;
           }
           .nodetext { pointer-events: none; font: 10px sans-serif; }
-    
+        </style>
+        
+        <style type="text/css">
+        #progressBar {position:absolute; 
+              width:400px; 
+              height:35px; 
+              visibility:hidden;
+              background-color:#99ccff; 
+              padding:20px;
+              border-width:2px;
+              border-left-color:#9999ff; 
+              border-top-color:#9999ff;
+              border-right-color:#666666; 
+              border-bottom-color:#666666; 
+              border-style:solid;
+             }
+        #progressBarMsg {position:absolute;
+                         left:10px; 
+                         top:10px; 
+                         font:18px Verdana, Helvetica, sans-serif bold
+                        }
+        #sliderWrapper {position:absolute; 
+                        left:10px; 
+                        top:40px; 
+                        width:417px; 
+                        height:15px;
+                        background-color:#ffffff; 
+                        border:1px solid #000000; 
+                        text-align:center;
+                        font-size:12px
+                       }
+        #slider{position:absolute; 
+                left:0px; 
+                top:0px; 
+                width:420px; 
+                height:15px;
+                clip:rect(0px 0px 15px 0px);
+                background-color:#666699; 
+                text-align:center; 
+                color:#ffffff; 
+                font-size:12px
+               }
         </style>
     </head>
     
     <body>
-        <script type="text/javascript">
-            VK.init({apiId: 2433492});
-        </script>
-    
-        <div class="gallery" id="chart"> </div>
-    
-        <div id="vk_auth"></div>
-    
-        ID: <input id="vk_id" type="text"></input>
-        <input value="Построить" type="button" onclick="peacock(document.getElementById('vk_id').value, 1);"></input>
-        
-        <div class="sc_menu_wrapper">
-            <div class="sc_menu">
+        <body onload="initDHTMLAPI(); initProgressBar(); hide('search_by_id')">
+
+        <div id="progressBar">
+            <div id="progressBarMsg">Collecting data...</div>
+            <div id="sliderWrapper">0%
+                <div id="slider">0%</div>
             </div>
         </div>
         
-        <script type="text/javascript" src="peacock.js"></script>
-        <script type="text/javascript" src="plot.js"></script>
+        <div id="login_button" onclick="VK.Auth.login(authInfo, 2);"></div>
+        <script language="javascript">
+            VK.init({apiId: 2433492});
+            VK.UI.button('login_button');
+        </script>
+
+        <div id ="search_by_id">    
+            ID: <input id="vk_id" type="text"></input>
+            <input value="Построить" type="button" onclick="peacock(document.getElementById('vk_id').value, 1);"></input>
+        </div>
+        
+                <div class="sc_menu_wrapper">
+            <div class="sc_menu">
+            </div>
+        </div>
     </body>
 </html>
