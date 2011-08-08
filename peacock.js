@@ -1,3 +1,13 @@
+var gl_root = {};
+var gl_friend_nr = 0;
+var gl_timeout = 300;
+var gl_depth = 1;
+//var gl_mutual_friends = [];
+var gl_curr_friends = [];
+var gl_deep_wall = [];
+var gl_groups = 0;
+
+
 VK.Widgets.Auth("vk_auth", {
     width: "200px",
     onAuth: function(data) {
@@ -9,16 +19,6 @@ VK.Widgets.Auth("vk_auth", {
         peacock(data.uid,1);
     }
 });
-
-var gl_root = {};
-var gl_friend_nr = 0;
-var gl_timeout = 300;
-var gl_depth = 1;
-//var gl_mutual_friends = [];
-var gl_curr_friends = [];
-var gl_deep_wall = [];
-var gl_groups = 0;
-
 
 function peacock(root_uid, depth) {
     console.log('peacock:', root_uid, 'depth:', depth);
@@ -34,14 +34,20 @@ function peacock(root_uid, depth) {
     if (root_uid != gl_root.uid) {
         setTimeout(function() {
             VK.Api.call('getProfiles', {
-                uids: child.owner_id,
-                fields: "photo",
+                uids: root_uid,
+                fields: "uid, first_name, last_name, photo",
                 test_mode: 1
             }, function(profile_list) {
                 if (profile_list.error) {
                     console.log("getProfiles error:", profile_list.error.error_msg);
                     return;
                 }
+                if (!profile_list.response.length) {
+                    console.log("getProfiles returned northing");
+                    return;
+                }
+                gl_root = profile_list.response[0];
+                gl_root.friends = [];
                 setTimeout(getFriends(root_uid),gl_timeout);
             });
         }, gl_timeout);
