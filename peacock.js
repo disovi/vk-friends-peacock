@@ -5,10 +5,8 @@ VK.Widgets.Auth("vk_auth", {
             console.log("vk_auth error:", data.error.error_msg);
             return;
         }
-        setTimeout( function() {
-                peacock(data.uid,1);
-            },
-            gl_timeout);
+        gl_root = data;
+        peacock(data.uid,1);
     }
 });
 
@@ -16,69 +14,78 @@ var gl_root = {};
 var gl_friend_nr = 0;
 var gl_timeout = 300;
 var gl_depth = 1;
-var gl_mutual_friends = [];
+//var gl_mutual_friends = [];
 var gl_curr_friends = [];
 var gl_deep_wall = [];
 var gl_groups = 0;
 
 
 function peacock(root_uid, depth) {
-    gl_root = {};
     console.log('peacock:', root_uid, 'depth:', depth);
     gl_depth = depth;
     var data = getCashedData(root_uid);
     if (data) {
         gl_root = data.root;
-        gl_mutual_friends = data.root.friends;
+        //gl_mutual_friends = data.root.friends;
         gl_groups = data.groups;
         peacock_view.plot(gl_root);
         return;
     }
-    setTimeout(function() {
-        VK.Api.call('getProfiles', {
-            uids: root_uid,
-            fields: 'uid, first_name, last_name, photo',
-            test_mode: 1
-        }, function(profile_list) {
-            if (profile_list.error) {
-                console.log("getProfiles error:", profile_list.error.error_msg);
-                return;
-            }
-            gl_root = profile_list.response[0];
-            VK.Api.call('friends.get', {
-                uid: root_uid,
-                fields: 'uid, first_name, last_name, photo',
+    if (root_uid != gl_root.uid) {
+        setTimeout(function() {
+            VK.Api.call('getProfiles', {
+                uids: child.owner_id,
+                fields: "photo",
                 test_mode: 1
-            }, function(r) {
-                if (r.error) {
-                    console.log("friends.get error:", r.error.error_msg);
+            }, function(profile_list) {
+                if (profile_list.error) {
+                    console.log("getProfiles error:", profile_list.error.error_msg);
                     return;
                 }
-                if (!r.response.length) {
-                    console.log("Friends.get failed");
-                    return;
-                }
-                console.log("Friends collected " + r.response.length);
-                gl_root.friends = r.response;
-                // removing ourself from friends
-                for (var i = 0; i < gl_root.friends.length; i++) {
-                    if (gl_root.friends[i].uid == gl_root.uid) {
-                        gl_root.friends.splice(i, 1);
-                        break;
-                    }
-                }
-                getMutualFriends(0, root_uid);
+                setTimeout(getFriends(root_uid),gl_timeout);
             });
-    });}, gl_timeout);
- }
+        }, gl_timeout);
+    }
+    else
+        setTimeout(getFriends(root_uid),gl_timeout);
+}
+
+function getFriends(root_uid) {
+    VK.Api.call('friends.get', {
+        uid: root_uid,
+        fields: 'uid, first_name, last_name, photo',
+        test_mode: 1
+    }, function(r) {
+        if (r.error) {
+            console.log("friends.get error:", r.error.error_msg);
+            return;
+        }
+        if (!r.response.length) {
+            console.log("Friends.get failed");
+            return;
+        }
+        console.log("Friends collected " + r.response.length);
+        gl_root.friends = r.response;
+        // removing ourself from friends
+        for (var i = 0; i < gl_root.friends.length; i++) {
+            if (gl_root.friends[i].uid == gl_root.uid) {
+                gl_root.friends.splice(i, 1);
+                break;
+            }
+        }
+        getMutualFriends(0, root_uid);
+    });
+}
 
 function getMutualFriends(friend_nr, root_uid) {
     console.log('Mutual for ' + root_uid + ' and ' + gl_root.friends[friend_nr].uid + ' ' + gl_root.friends[friend_nr].first_name + ' ' + gl_root.friends[friend_nr].last_name);
-    var new_mutual_friend = {};
-    new_mutual_friend = gl_root.friends[friend_nr];
-    new_mutual_friend.friends = [];
-    new_mutual_friend.gr_id = 0;
-    gl_mutual_friends.push(new_mutual_friend);
+    //var new_mutual_friend = {};
+    //new_mutual_friend = gl_root.friends[friend_nr];
+    //new_mutual_friend.friends = [];
+    //new_mutual_friend.gr_id = 0;
+    gl_root.friends[friend_nr].friends = [];
+    gl_root.friends[friend_nr].gr_id = 0;
+    //gl_mutual_friends.push(new_mutual_friend);
     setTimeout(function() {
         VK.Api.call('friends.getMutual', {
             target_uid: gl_root.friends[friend_nr].uid,
@@ -96,13 +103,13 @@ function getMutualFriendsCallback(fr) {
     gl_curr_friends = fr.response;
     // removing ourself and himself from friends
     for (var i = 0; i < gl_curr_friends.length; i++) {
-        if (gl_curr_friends[i] == gl_root.uid || gl_curr_friends[i] == gl_mutual_friends[gl_friend_nr].uid) {
+        if (gl_curr_friends[i] == gl_root.uid || gl_curr_friends[i] == gl_root.friends[gl_friend_nr].uid) {
             gl_curr_friends.splice(i, 1);
         } 
     }
     setTimeout(function() {
         VK.Api.call('wall.get', {
-            owner_id: gl_mutual_friends[gl_friend_nr].uid,
+            owner_id: gl_root.friends[gl_friend_nr].uid,
             count: 100,
             test_mode: 1
         }, getWallCallback);
@@ -136,7 +143,7 @@ function getWeights(mutual_friends, deep_wall) {
             new_connection.weight = 0;
             for (i = 0; i < deep_wall.length; i++)
                 new_connection.weight += getWeight(uid, deep_wall[i]);
-            gl_mutual_friends[gl_friend_nr].friends.push(new_connection);
+            gl_root.friends[gl_friend_nr].friends.push(new_connection);
             console.log("uid: " + new_connection.uid + " weight: " + new_connection.weight);
         });
     }
@@ -147,10 +154,10 @@ function getWeights(mutual_friends, deep_wall) {
         return;
     }
     else {
-        setGroups(gl_mutual_friends);
+        setGroups(gl_root.friends);
         for (var i = 0; i <= gl_groups; i++) {
             console.log('group id:', i);
-            gl_mutual_friends.forEach(function(friend) {
+            gl_root.friends.forEach(function(friend) {
                 if(friend.gr_id == i)
                     console.log(friend.uid);
             });
@@ -200,18 +207,18 @@ function setGroups(mutual_friends) {
 }
 
 function setUserGroup(gr_id, uid) {
-    for (var friend_id = 0; friend_id < gl_mutual_friends.length; friend_id++) {
-        if (gl_mutual_friends[friend_id].uid == uid) {
-            gl_mutual_friends[friend_id].gr_id = gr_id;
+    for (var friend_id = 0; friend_id < gl_root.friends.length; friend_id++) {
+        if (gl_root.friends[friend_id].uid == uid) {
+            gl_root.friends[friend_id].gr_id = gr_id;
             return;
         }
     }
 }
 
 function getFriendById(uid) {
-    for (friend_id = 0; friend_id < gl_mutual_friends.length; friend_id++) {
-        if (gl_mutual_friends[friend_id].uid == uid) {
-            return gl_mutual_friends[friend_id];
+    for (friend_id = 0; friend_id < gl_root.friends.length; friend_id++) {
+        if (gl_root.friends[friend_id].uid == uid) {
+            return gl_root.friends[friend_id];
         }
     }
 }
