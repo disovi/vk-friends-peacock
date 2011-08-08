@@ -54,7 +54,7 @@ function peacock(root_uid, depth) {
                     console.log("friends.get error:", r.error.error_msg);
                     return;
                 }
-                if (!r.response.length) {
+                if (r.response === undefined || !r.response.length) {
                     console.log("Friends.get failed");
                     return;
                 }
