@@ -1,34 +1,44 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<head>
-    <title>Friends Peacock</title>
-    <script type="text/javascript" src="http://userapi.com/js/api/openapi.js?33"></script>
-
-    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script>
-    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.layout.js"></script>
-    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.geom.js"></script>
-
-    <style type="text/css">
-      path.link {
-      fill: none;
-      stroke: #9ecae1;
-      stroke-width: 1.5px;
-      }
-      .nodetext { pointer-events: none; font: 10px sans-serif; }
-
-    </style>
-</head>
-<body>
-    <script type="text/javascript">
-        VK.init({apiId: 2433492});
-    </script>
-
-    <div class="gallery" id="chart"> </div>
-
-    <div id="vk_auth"></div>
-
-    <script type="text/javascript" src="peacock.js"></script>
-    <script type="text/javascript" src="plot.js"></script>
-</body>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        
+        <title>Friends Peacock</title>
+        <script type="text/javascript" src="http://userapi.com/js/api/openapi.js?33"></script>
+    
+        <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script>
+        <script type="text/javascript" src="http://mbostock.github.com/d3/d3.layout.js"></script>
+        <script type="text/javascript" src="http://mbostock.github.com/d3/d3.geom.js"></script>
+    
+        <style type="text/css">
+          path.link {
+          fill: none;
+          stroke: #9ecae1;
+          stroke-width: 1.5px;
+          }
+          .nodetext { pointer-events: none; font: 10px sans-serif; }
+    
+        </style>
+        
+        <style type="text/css">
+            
+        </style>
+    </head>
+    
+    <body>
+        <script type="text/javascript">
+            VK.init({apiId: 2433492});
+        </script>
+    
+        <div class="gallery" id="chart"> </div>
+    
+        <div id="vk_auth"></div>
+    
+        ID: <input id="vk_id" type="text"></input>
+        <input value="Построить" type="button" onclick="peacock(document.getElementById('vk_id').value, 1);"></input>
+        
+        <script type="text/javascript" src="peacock.js"></script>
+        <script type="text/javascript" src="plot.js"></script>
+    </body>
 </html>
