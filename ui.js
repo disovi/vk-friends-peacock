@@ -51,7 +51,8 @@ function makeScrollable(wrapper, scrollable) {
 }
 
 function fill_friend_list(friend_list) {
-    $('.contact').remove();
+    if ($('.contact').length > 0)
+        return;
     
     friend_list.forEach(function(e) {
         $('div.sc_menu').append("<a class='contact' href='#' onclick='peacock(" + e.uid 

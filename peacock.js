@@ -36,6 +36,7 @@ function peacock(root_uid, depth) {
         gl_root = data.root;
         //gl_mutual_friends = data.root.friends;
         gl_groups = data.groups;
+        fill_friend_list(gl_root.friends);
         peacock_view.plot(gl_root);
         return;
     }
@@ -81,6 +82,7 @@ function getFriends(root_uid) {
         }
         console.log("Friends collected " + r.response.length);
         gl_root.friends = r.response;
+        fill_friend_list(gl_root.friends);
         gl_loop_object.end = gl_root.friends.length; 
          // removing ourself from friends
         for (var i = 0; i < gl_root.friends.length; i++) {
