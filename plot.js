@@ -64,7 +64,10 @@ var test_data = JSON.parse(localStorage.getItem("vlad"));
                         if (e.uid === friend.uid)
                             from = i;
                     });
-
+                    if (nodes[from] === undefined || nodes[to] === undefined) {
+                        console.log('Current user is supposed to be deleted:', e.uid);
+                        return;
+                    }
                     // skip main
                     if (nodes[from].uid == data.uid || nodes[to].uid == data.uid)
                         return;
