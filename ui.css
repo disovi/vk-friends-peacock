@@ -5,12 +5,11 @@ body {
 }
 
 .sc_menu_wrapper {
-  position: relative;
-  height: 500px;
-  width: 200px;
-
-  margin-top: 30px;
-  overflow: auto;
+    position: relative;
+    
+    margin-top: 30px;
+    float: left;
+    overflow: auto;
 }
 
 .sc_menu {
@@ -18,10 +17,11 @@ body {
 }
 
 .sc_menu a {
-  display: block;
-  margin-bottom: 5px;
+  display: inline-block;
+  margin-bottom: 1px;
   width: 160px;
-
+  margin-right: 1px;
+ 
   text-decoration: none;
   
   border: 2px rgb(79, 79, 79) solid;
@@ -38,7 +38,7 @@ body {
 }
 
 .sc_menu img {
-  display: block;
+  display: inline;
   border: none;
 }
 
@@ -46,6 +46,7 @@ body {
   position: absolute;
   top: 50px;
   left: 10px;
+  display: inline;
 
   margin: 0 auto;
   padding: 10px;
@@ -61,10 +62,11 @@ body {
 }
 
 .contact {
-    display: block;
+    display: inline;
     height: 30px;
     padding: 4px 8px;
     line-height: 0;
+    fill
     white-space: nowrap;
     overflow: hidden;
 }
@@ -80,9 +82,9 @@ body {
 
 .contact_name {
     line-height: 30px;
-    padding: 0 0 0 8px;
+    padding: 0 0 0 4px;
     white-space: nowrap;
-    display: block;
+    display: inline;
     width: 120px;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -92,4 +94,10 @@ body {
     float: left;
 }
 
+.graph {
+    align: right;
+}
 
+.main {
+    overflow: auto;
+}

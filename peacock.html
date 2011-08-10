@@ -45,6 +45,7 @@
               border-right-color:#666666; 
               border-bottom-color:#666666; 
               border-style:solid;
+              z-index:1;
              }
         #progressBarMsg {position:absolute;
                          left:10px; 
@@ -75,8 +76,7 @@
         </style>
     </head>
     
-    <body>
-        <body onload="initDHTMLAPI(); initProgressBar(); hide('search_by_id')">
+    <body onload="initDHTMLAPI(); initProgressBar(); hide('search_by_id')">
 
         <div id="progressBar">
             <div id="progressBarMsg">Collecting data...</div>
@@ -96,9 +96,15 @@
             <input value="Построить" type="button" onclick="peacock(document.getElementById('vk_id').value, 1);"></input>
         </div>
         
-                <div class="sc_menu_wrapper">
-            <div class="sc_menu">
+        <div class="main">
+            <div class="graph">      
+            </div>
+            
+            <div class="sc_menu_wrapper">
+                <div class="sc_menu">
+                </div>
             </div>
         </div>
+
     </body>
 </html>

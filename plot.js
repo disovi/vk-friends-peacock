@@ -4,8 +4,8 @@ var test_data = JSON.parse(localStorage.getItem("vlad"));
 (function() {
     peacock_view = {};
     
-    var w = screen.availWidth,
-        h = screen.availHeight,
+    var w = 2000,
+        h = 2000,
         fill = d3.scale.category10();
 
     peacock_view.plot = function(ex_data) {
@@ -17,7 +17,7 @@ var test_data = JSON.parse(localStorage.getItem("vlad"));
         
         d3.selectAll("svg").remove();
         
-        var vis = d3.select("body").append("svg:svg")
+        var vis = d3.select(".graph").append("svg:svg")
             .attr("width", w)
             .attr("height", h)
             .append("svg:g");
