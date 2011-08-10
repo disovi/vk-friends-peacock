@@ -70,7 +70,7 @@ function peacock(root_uid, depth) {
 function getFriends(root_uid) {
     VK.Api.call('friends.get', {
         uid: root_uid,
-        fields: 'uid, first_name, last_name, photo',
+        fields: 'uid, first_name, last_name, photo, contacts',
         test_mode: 1
     }, function(r) {
         if (r.error) {
@@ -86,7 +86,7 @@ function getFriends(root_uid) {
         console.log("Friends collected " + r.response.length);
         gl_root.friends = r.response;
         fill_friend_list(gl_root.friends);
-        gl_loop_object.end = gl_root.friends.length; 
+        gl_loop_object.end = gl_root.friends.length;
          // removing ourself from friends
         for (var i = 0; i < gl_root.friends.length; i++) {
             if (gl_root.friends[i].uid == gl_root.uid) {
@@ -121,7 +121,7 @@ function getMutualFriends(friend_nr, root_uid) {
 function getMutualFriendsCallback(fr) {
     if (fr.error) {
         console.log("friends.getMutual error: " + fr.error.error_msg);
-        
+
         partialyComplete();
         return;
     }
@@ -130,7 +130,7 @@ function getMutualFriendsCallback(fr) {
     for (var i = 0; i < gl_curr_friends.length; i++) {
         if (gl_curr_friends[i] == gl_root.uid || gl_curr_friends[i] == gl_root.friends[gl_friend_nr].uid) {
             gl_curr_friends.splice(i, 1);
-        } 
+        }
     }
     setTimeout(function() {
         VK.Api.call('wall.get', {
@@ -144,7 +144,7 @@ function getMutualFriendsCallback(fr) {
 function getWallCallback(wall) {
     if (wall.error) {
         console.log("wall.get error: " + wall.error.error_msg);
-        
+
         partialyComplete();
         return;
     }
@@ -253,7 +253,7 @@ function partialyComplete()
             getMutualFriends(gl_friend_nr, gl_root.uid);
             return;
         }
-        
+
         // If work done, but last error?
         cashData(gl_root,gl_groups);
         console.log('partial finished');
@@ -278,9 +278,7 @@ function getCashedData(uid) {
     node = JSON.parse(localStorage.getItem(uid));
     if (!node)
         console.log('no cashed data found');
-    else 
+    else
         console.log('cashed data loaded succesfully');
     return node;
 }
-    
-    

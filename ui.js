@@ -53,13 +53,18 @@ function makeScrollable(wrapper, scrollable) {
 function fill_friend_list(friend_list) {
     if ($('.contact').length > 0)
         return;
-    
+
     friend_list.forEach(function(e) {
-        $('div.sc_menu').append("<a class='contact' href='#' onclick='peacock(" + e.uid 
-                                + ", 1);'><img class='contact_photo fl_l' src='" 
-                                + e.photo + "'/><span class='contact_name fl_l'>" 
-                                + e.first_name + " " 
-                                + e.last_name + "</span></a>");
+	var mobile = "";
+
+	if (e.mobile_phone !== undefined) {
+	    mobile = e.mobile_phone;
+	}
+
+        $('div.sc_menu').append("<a title='" + mobile + "'" + "class='contact' href='#' onclick='peacock(" + e.uid  + ", 1);'>"
+				+ "<img class='contact_photo fl_l' src='" + e.photo + "'/>"
+				+ "<span class='contact_name fl_l'>" + e.first_name + " " + e.last_name + "</span>"
+				+ "</a>");
     });
 }
 
