@@ -1,11 +1,8 @@
-
-var test_data = JSON.parse(localStorage.getItem("vlad"));
-
 (function() {
     peacock_view = {};
     
-    var w = screen.availWidth,
-        h = screen.availHeight,
+    var w = screen.availWidth + 200,
+        h = screen.availHeight + 200,
         fill = d3.scale.category10();
 
     peacock_view.plot = function(ex_data) {
@@ -165,8 +162,7 @@ var test_data = JSON.parse(localStorage.getItem("vlad"));
           
           
            node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
-          }); 
-
+          });
     };
 
     peacock_view.stop = function() { force.stop(); };
