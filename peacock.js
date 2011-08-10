@@ -8,11 +8,9 @@ var gl_deep_wall = [];
 var gl_groups = 0;
 var gl_loop_object = {start:0, end:10, current:0, interval:null};
 
-
 function authInfo(response) {
     if (response.session) {
         console.log('user has logged in:', response.session.mid);
-        //removeElement('login_button');
         removeElement('login_button');
         show('search_by_id');
         peacock(response.session.mid, 1);
@@ -31,6 +29,7 @@ function removeElement(id) {
 function peacock(root_uid, depth) {
     console.log('peacock:', root_uid, 'depth:', depth);
     gl_depth = depth;
+    gl_friend_nr = 0;
     var data = getCashedData(root_uid);
     if (data) {
         gl_root = data.root;
@@ -49,10 +48,12 @@ function peacock(root_uid, depth) {
                 test_mode: 1
             }, function(profile_list) {
                 if (profile_list.error) {
+                    setTimeout(hideProgressBar(), 500);
                     console.log("getProfiles error:", profile_list.error.error_msg);
                     return;
                 }
                 if (!profile_list.response.length) {
+                    setTimeout(hideProgressBar(), 500);
                     console.log("getProfiles returned northing");
                     return;
                 }
@@ -73,10 +74,12 @@ function getFriends(root_uid) {
         test_mode: 1
     }, function(r) {
         if (r.error) {
+            setTimeout(hideProgressBar(), 500);
             console.log("friends.get error:", r.error.error_msg);
             return;
         }
         if (!r.response.length) {
+            setTimeout(hideProgressBar(), 500);
             console.log("Friends.get failed");
             return;
         }
@@ -118,6 +121,8 @@ function getMutualFriends(friend_nr, root_uid) {
 function getMutualFriendsCallback(fr) {
     if (fr.error) {
         console.log("friends.getMutual error: " + fr.error.error_msg);
+        
+        partialyComplete();
         return;
     }
     gl_curr_friends = fr.response;
@@ -139,6 +144,8 @@ function getMutualFriendsCallback(fr) {
 function getWallCallback(wall) {
     if (wall.error) {
         console.log("wall.get error: " + wall.error.error_msg);
+        
+        partialyComplete();
         return;
     }
     gl_deep_wall.push(wall.response);
@@ -235,6 +242,23 @@ function setUserGroup(gr_id, uid) {
             return;
         }
     }
+}
+
+function partialyComplete()
+{
+        // Continue work
+        if (++gl_friend_nr < gl_root.friends.length) {
+            gl_deep_wall = [];
+            gl_curr_friends = [];
+            getMutualFriends(gl_friend_nr, gl_root.uid);
+            return;
+        }
+        
+        // If work done, but last error?
+        cashData(gl_root,gl_groups);
+        console.log('partial finished');
+        setTimeout(hideProgressBar(), 500);
+        peacock_view.plot(gl_root);
 }
 
 function getFriendById(uid) {
