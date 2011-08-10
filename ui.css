@@ -95,7 +95,10 @@ body {
 }
 
 .graph {
-    align: right;
+    width: 1200px;
+    height: 600px;
+    overflow: auto; 
+    /* align: right; */
 }
 
 .main {
