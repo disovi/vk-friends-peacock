@@ -4,8 +4,8 @@ var test_data = JSON.parse(localStorage.getItem("vlad"));
 (function() {
     peacock_view = {};
     
-    var w = 2000,
-        h = 2000,
+    var w = screen.availWidth,
+        h = screen.availHeight,
         fill = d3.scale.category10();
 
     peacock_view.plot = function(ex_data) {
