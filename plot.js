@@ -65,7 +65,7 @@ var test_data = JSON.parse(localStorage.getItem("vlad"));
                             from = i;
                     });
                     if (nodes[from] === undefined || nodes[to] === undefined) {
-                        console.log('Current user is supposed to be deleted:', e.uid);
+                        console.log('Current user is supposed to be deleted:', mutual_friend.uid);
                         return;
                     }
                     // skip main
