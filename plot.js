@@ -17,7 +17,7 @@ var test_data = JSON.parse(localStorage.getItem("vlad"));
         
         d3.selectAll("svg").remove();
         
-        var vis = d3.select("body").append("svg:svg")
+        var vis = d3.select(".graph").append("svg:svg")
             .attr("width", w)
             .attr("height", h)
             .append("svg:g");
