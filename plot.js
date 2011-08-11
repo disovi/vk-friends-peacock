@@ -114,7 +114,7 @@
                     .call(force.drag);
         
         node.append("svg:a")
-            .attr("xlink:href", function(d) { return "http://vkontakte.ru/id" + d.uid; })
+            .attr("xlink:href", function(d) { return "http://vk.com/id" + d.uid; })
             .append("svg:text")
             .attr("dx", function(d) { return d.x < 180 ? 8 : -8; })
             .attr("dy", ".31em")
