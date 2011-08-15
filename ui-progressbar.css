@@ -1,0 +1,40 @@
+#progressBar {position:absolute;
+      width:400px;
+      height:35px;
+      visibility:hidden;
+      background-color:#99ccff;
+      padding:20px;
+      border-width:2px;
+      border-left-color:#9999ff;
+      border-top-color:#9999ff;
+      border-right-color:#666666;
+      border-bottom-color:#666666;
+      border-style:solid;
+      z-index:1;
+     }
+#progressBarMsg {position:absolute;
+                 left:10px;
+                 top:10px;
+                 font:18px Verdana, Helvetica, sans-serif bold
+                }
+#sliderWrapper {position:absolute;
+                left:10px;
+                top:40px;
+                width:417px;
+                height:15px;
+                background-color:#ffffff;
+                border:1px solid #000000;
+                text-align:center;
+                font-size:12px
+               }
+#slider{position:absolute;
+        left:0px;
+        top:0px;
+        width:420px;
+        height:15px;
+        clip:rect(0px 0px 15px 0px);
+        background-color:#666699;
+        text-align:center;
+        color:#ffffff;
+        font-size:12px
+       }
